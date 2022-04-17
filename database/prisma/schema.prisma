@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model funcionarios {
+  matricula Int     @id @default(autoincrement())
+  nome      String? @db.VarChar(50)
+  VT        String? @db.VarChar(1)
+  DEP14     Int?
+  depir     Int?
+  salario   Float?
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tabelas {
+  TINSS1  Float?
+  TINSS2  Float?
+  TINSS3  Float?
+  TINSS4  Float?
+  AINSS1  Float?
+  AINSS2  Float?
+  AINSS3  Float?
+  AINSS4  Float?
+  TSF     Float?
+  VSF     Float?
+  TIRRF1  Float?
+  TIRRF2  Float?
+  AIRRF2  Float?
+  DIRRF2  Float?
+  TIRRF3  Float?
+  AIRRF3  Float?
+  DIRRF3  Float?
+  TIRRF4  Float?
+  AIRRF4  Float?
+  DIRRF4  Float?
+  AIRRF5  Float?
+  DIRRF5  Float?
+  DEDPDEP Float?
+
+  @@ignore
+}
