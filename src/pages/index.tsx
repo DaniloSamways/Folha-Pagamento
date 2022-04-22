@@ -58,7 +58,12 @@ export default function Home() {
               <RowHeader titulo="vt" align="left" />
               <RowHeader titulo="dep14" />
               <RowHeader titulo="depir" />
-              <RowHeader titulo="salario" align="left" />
+              <RowHeader titulo="salario base" align="left" />
+              <RowHeader titulo="inss" align="left" />
+              <RowHeader titulo="salário familia" align="left" />
+              <RowHeader titulo="vale transporte" align="left" />
+              <RowHeader titulo="irrf" align="left" />
+              <RowHeader titulo="salário líquido" align="left" />
             </tr>
           </thead>
           <tbody className="text-sm divide-y divide-gray-100">
@@ -146,7 +151,7 @@ export default function Home() {
 
                                   <div className="col-span-2 ">
                                     <label htmlFor="depir" className="block text-sm font-medium text-gray-700">
-                                      Dependentes
+                                      Dependentes(IR)
                                     </label>
                                     <input
                                       onChange={(e) => setDepir(e.target.value)}
@@ -159,7 +164,7 @@ export default function Home() {
 
                                   <div className="col-span-6 sm:col-span-3 lg:col-span-3">
                                     <label htmlFor="salario" className="block text-sm font-medium text-gray-700">
-                                      Salário
+                                      Salário Base
                                     </label>
                                     <div className="mt-1 flex rounded-md shadow-sm">
                                       <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
