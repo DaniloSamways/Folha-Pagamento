@@ -6,8 +6,11 @@ import { Row, RowHeader, Table, TableSection } from '../components/table';
 export default function Home() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [visible, setVisible] = useState('hidden');
+  const [showConfirm, setShowConfirm] = useState('hidden');
+  const [funcionario, setFuncionario] = useState('Danilo Samways');
+  const [idFuncionario, setIdFuncionario] = useState(1);
 
-  
+
   const [nome, setNome] = useState('');
   const [vt, setVt] = useState('N');
   const [dep14, setDep14] = useState('0');
@@ -36,49 +39,93 @@ export default function Home() {
     })
     setVisible('hidden');
   }
+  const excluiFuncionario = (id) => {
+    const url = 'http://localhost:3000/api/funcionarios/deleteFunc';
+    axios.post(url, { matricula: id }).then((res) => {
+      getData();
+    })
+    setShowConfirm('hidden')
+  }
+  const handleDelete = (nome, matricula) => {
+    setShowConfirm('')
+    setNome(nome)
+    setIdFuncionario(matricula)
+  }
+
   useEffect(() => {
     getData();
   }, []);
 
-
+  const handleChange = (evt) => {
+    const url = 'http://localhost:3000/api/funcionarios/get';
+    axios.get(url + "?nome=" + evt.target.value).then((res) => {
+      const data = res.data
+      setFuncionarios(data)
+    });
+  }
 
   return (
     <>
 
       <TableSection>
-        <div className="p-3 text-center">
+        <div className="p-3 text-center ">
           <Button title="Novo Funcionario" onClick={() => setVisible('')} />
+          <div className="mt-2 flex justify-center">
+            <div className="xl:w-96">
+              <div className="flex items-stretch w-full mb-4">
+                <input onChange={handleChange} type="search" className="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" placeholder="Procurar" aria-label="Search" aria-describedby="button-addon2" />
+              </div>
+            </div>
+          </div>
         </div>
-        <Table>
+        <div className='overflow-auto h-96'>
+          <Table>
 
-          <thead className="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
-            <tr>
-              <RowHeader titulo="matrícula" align="center" />
-              <RowHeader titulo="nome" align="left" />
-              <RowHeader titulo="vt" align="left" />
-              <RowHeader titulo="dep14" />
-              <RowHeader titulo="depir" />
-              <RowHeader titulo="salario base" align="left" />
-              <RowHeader titulo="inss" align="left" />
-              <RowHeader titulo="salário familia" align="left" />
-              <RowHeader titulo="vale transporte" align="left" />
-              <RowHeader titulo="irrf" align="left" />
-              <RowHeader titulo="salário líquido" align="left" />
-            </tr>
-          </thead>
-          <tbody className="text-sm divide-y divide-gray-100">
-            {funcionarios.map(funcionario => (
-              <Row key={funcionario.matricula}
-                matricula={funcionario.matricula}
-                nome={funcionario.nome}
-                vt={funcionario.VT}
-                dep14={funcionario.DEP14}
-                depir={funcionario.depir}
-                salario={funcionario.salario}
-              />
-            ))}
-          </tbody>
-        </Table>
+            <thead className="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
+              <tr>
+                <RowHeader titulo="matrícula" align="center" />
+                <RowHeader titulo="nome" align="left" />
+                <RowHeader titulo="vt" align="left" />
+                <RowHeader titulo="dep14" />
+                <RowHeader titulo="depir" />
+                <RowHeader titulo="salario base" align="left" />
+                <RowHeader titulo="inss" align="left" />
+                <RowHeader titulo="salário familia" align="left" />
+                <RowHeader titulo="vale transporte" align="left" />
+                <RowHeader titulo="irrf" align="left" />
+                <RowHeader titulo="salário líquido" align="left" />
+                <RowHeader titulo="ações" align="center" />
+              </tr>
+            </thead>
+            <tbody className="text-sm divide-y divide-gray-100">
+              {funcionarios.map(funcionario => (
+                <Row key={funcionario.matricula}
+                  matricula={funcionario.matricula}
+                  nome={funcionario.nome}
+                  vt={funcionario.VT}
+                  dep14={funcionario.DEP14}
+                  depir={funcionario.depir}
+                  salario={funcionario.salario}
+                >
+                  <td className="p-2 whitespace-nowrap">
+                    <div className="text-center font-medium">
+                      <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </button>
+                      <button onClick={() => handleDelete(funcionario.nome, funcionario.matricula)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </Row>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       </TableSection>
 
       <div className={`fixed z-10 inset-0 overflow-y-auto ${visible}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -193,6 +240,113 @@ export default function Home() {
             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
               <button onClick={() => cadastraFuncionario()} type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">Cadastrar</button>
               <button onClick={() => setVisible('hidden')} type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={`${showConfirm} fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true`}>
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div className="sm:flex sm:items-start">
+                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">Excluir {nome}?</h3>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">Você tem certeza de que deseja excluir o funcionário <b>{nome}</b>? Todo funcionário deletado não poderá ser restaurado posteriormente.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button onClick={() => excluiFuncionario(idFuncionario)} type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">Excluir</button>
+              <button onClick={() => setShowConfirm('hidden')} type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={`fixed z-10 inset-0 overflow-y-auto hidden`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div className="sm:flex sm:items-start">
+                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">Recibo de Pagamento de Salário</h3>
+                  <div className="mt-2">
+                    <div>
+                      <div>
+                        <div className="mt-5 md:mt-0 md:col-span-2">
+                          <form action="#" method="POST">
+                            <div className="shadow overflow-hidden sm:rounded-md">
+                              <div className="px-4 py-5 bg-white sm:p-6">
+                                <div className="grid grid-cols-5 gap-5">
+                                  <div className="sm:col-span-1">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                      Matrícula
+                                    </label>
+                                    <p className="text-sm">{idFuncionario}</p>
+                                  </div>
+                                  <div className="col-span-6 sm:col-span-2 ml-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                      Nome
+                                    </label>
+                                    <p className="text-sm">{funcionario}</p>
+                                  </div>
+                                  <div className="col-span-6 sm:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                      Salário Base
+                                    </label>
+                                    <p className="text-sm">R$ 10000</p>
+                                  </div>
+                                  <table>
+                                    <thead className="text-sm font-semibold uppercase text-gray-400">
+                                      <tr>
+                                        <th className="px-6 bg-gray-200">Descricao</th>
+                                        <th className="px-6 bg-red-200">Descontos</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className='text-xs'>
+                                      <tr>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-gray-100">INSS</td>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> 100</td>
+                                      </tr>
+                                      <tr>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-gray-100">VALE TRANSPORTE</td>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> 100</td>
+                                      </tr>
+                                      <tr>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-gray-100">IRRF</td>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> 100</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button  type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">Fechar</button>
             </div>
           </div>
         </div>
