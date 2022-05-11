@@ -252,6 +252,7 @@ export default function Home() {
                                       type="number"
                                       value={dep14}
                                       name="dep14"
+                                      min="0"
                                       id="dep14"
                                       className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                     />
@@ -265,6 +266,7 @@ export default function Home() {
                                       onChange={(e) => setDepir(e.target.value)}
                                       type="number"
                                       name="depir"
+                                      min="0"
                                       value={depir}
                                       id="depir"
                                       className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -394,10 +396,6 @@ export default function Home() {
                                       <tr>
                                         <td className="p-2 whitespace-nowrap px-6 bg-gray-100">IRRF</td>
                                         <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> {(contas.irrf(salario, depir)).toFixed(2)}</td>
-                                      </tr>
-                                      <tr>
-                                        <td className="p-2 whitespace-nowrap px-6 bg-gray-100">SALÁRIO FAM.</td>
-                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> {(contas.salarioFamilia(salario, dep14)).toFixed(2)}</td>
                                       </tr>
                                       <div className="col-span-6 sm:col-span-2 mt-2">
                                         <label className="block text-sm font-medium text-gray-700">
