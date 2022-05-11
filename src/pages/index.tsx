@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '../components/button';
 import { Contas } from '../components/contas';
@@ -9,7 +10,6 @@ export default function Home() {
   const [visible, setVisible] = useState('hidden');
   const [extratoVisible, setExtratoVisible] = useState('hidden');
   const [showConfirm, setShowConfirm] = useState('hidden');
-  const [funcionario, setFuncionario] = useState('Danilo Samways');
   const [idFuncionario, setIdFuncionario] = useState(1);
 
   const [isEditable, setIsEditable] = useState(false);
@@ -125,6 +125,7 @@ export default function Home() {
       <TableSection>
         <div className="p-3 text-center ">
           <Button title="Novo Funcionario" onClick={() => handleSave()} />
+          <Link passHref href="/valores" ><Button title="Valores"/></Link>
           <div className="mt-2 flex justify-center">
             <div className="xl:w-96">
               <div className="flex items-stretch w-full mb-4">
