@@ -1,14 +1,18 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Button } from '../components/button';
+import { Contas } from '../components/contas';
 import { Row, RowHeader, Table, TableSection } from '../components/table';
 
 export default function Home() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [visible, setVisible] = useState('hidden');
+  const [extratoVisible, setExtratoVisible] = useState('hidden');
   const [showConfirm, setShowConfirm] = useState('hidden');
   const [funcionario, setFuncionario] = useState('Danilo Samways');
   const [idFuncionario, setIdFuncionario] = useState(1);
+
+  const [isEditable, setIsEditable] = useState(false);
 
 
   const [nome, setNome] = useState('');
@@ -29,7 +33,7 @@ export default function Home() {
     const url = 'http://localhost:3000/api/funcionarios/getAll';
     axios.get(url).then((res) => {
       const data = res.data
-      setFuncionarios(data)
+      setFuncionarios(data);
     });
   }
   const cadastraFuncionario = () => {
@@ -39,6 +43,39 @@ export default function Home() {
     })
     setVisible('hidden');
   }
+
+  const data2 = ({
+    matricula: idFuncionario,
+    nome: nome,
+    vt: vt,
+    dep14: dep14,
+    depir: depir,
+    salario: salario
+  })
+
+  const editaFuncionario = () => {
+    const url = 'http://localhost:3000/api/funcionarios/editFunc';
+    axios.post(url, data2).then((res) => {
+      getData();
+    })
+    console.log(idFuncionario);
+    setVisible('hidden');
+  }
+
+  const handleSets = (nome, vt, dep14, depir, salario, id) => {
+    setNome(nome);
+    setVt(vt);
+    setDep14(dep14);
+    setDepir(depir);
+    setSalario(salario);
+    setIdFuncionario(id);
+  }
+  const handleEdit = (nome, vt, dep14, depir, salario, id) => {
+    setVisible('');
+    setIsEditable(true);
+    handleSets(nome, vt, dep14, depir, salario, id);
+  }
+
   const excluiFuncionario = (id) => {
     const url = 'http://localhost:3000/api/funcionarios/deleteFunc';
     axios.post(url, { matricula: id }).then((res) => {
@@ -52,6 +89,12 @@ export default function Home() {
     setIdFuncionario(matricula)
   }
 
+  const handleExtrato = (nome, vt, dep14, depir, salario, id) => {
+    setExtratoVisible('');
+    handleSets(nome, vt, dep14, depir, salario, id);
+  }
+
+
   useEffect(() => {
     getData();
   }, []);
@@ -64,12 +107,24 @@ export default function Home() {
     });
   }
 
+  const handleSave = () => {
+    setIsEditable(false)
+    setVisible('');
+    setNome('');
+    setVt('N');
+    setDep14('0');
+    setDepir('0');
+    setSalario('0');
+  }
+
+  let contas = new Contas();
+
   return (
     <>
 
       <TableSection>
         <div className="p-3 text-center ">
-          <Button title="Novo Funcionario" onClick={() => setVisible('')} />
+          <Button title="Novo Funcionario" onClick={() => handleSave()} />
           <div className="mt-2 flex justify-center">
             <div className="xl:w-96">
               <div className="flex items-stretch w-full mb-4">
@@ -109,7 +164,10 @@ export default function Home() {
                 >
                   <td className="p-2 whitespace-nowrap">
                     <div className="text-center font-medium">
-                      <button>
+                      <button onClick={() => handleEdit(funcionario.nome, funcionario.VT, funcionario.DEP14, funcionario.depir, funcionario.salario, funcionario.matricula)}>
+                        <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>
+                      </button>
+                      <button onClick={() => handleExtrato(funcionario.nome, funcionario.VT, funcionario.DEP14, funcionario.depir, funcionario.salario, funcionario.matricula)}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -162,6 +220,7 @@ export default function Home() {
                                       type="text"
                                       name="nome"
                                       id="nome"
+                                      value={nome}
                                       className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                     />
                                   </div>
@@ -176,6 +235,7 @@ export default function Home() {
                                       onChange={(e) => setVt(e.target.value)}
                                       id="vt"
                                       name="vt"
+                                      value={vt}
                                       className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     >
                                       <option value="N">Não</option>
@@ -190,6 +250,7 @@ export default function Home() {
                                     <input
                                       onChange={(e) => setDep14(e.target.value)}
                                       type="number"
+                                      value={dep14}
                                       name="dep14"
                                       id="dep14"
                                       className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -204,6 +265,7 @@ export default function Home() {
                                       onChange={(e) => setDepir(e.target.value)}
                                       type="number"
                                       name="depir"
+                                      value={depir}
                                       id="depir"
                                       className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                     />
@@ -222,6 +284,7 @@ export default function Home() {
                                         type="number"
                                         name="salario"
                                         id="salario"
+                                        value={salario}
                                         className="pb-1 pl-1 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                       />
                                     </div>
@@ -238,7 +301,7 @@ export default function Home() {
               </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button onClick={() => cadastraFuncionario()} type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">Cadastrar</button>
+              <button onClick={() => isEditable ? editaFuncionario() : cadastraFuncionario()} type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">{isEditable ? "Editar" : "Cadastrar"}</button>
               <button onClick={() => setVisible('hidden')} type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancelar</button>
             </div>
           </div>
@@ -273,7 +336,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className={`fixed z-10 inset-0 overflow-y-auto hidden`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div className={`fixed z-10 inset-0 overflow-y-auto ${extratoVisible}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -304,13 +367,13 @@ export default function Home() {
                                     <label className="block text-sm font-medium text-gray-700">
                                       Nome
                                     </label>
-                                    <p className="text-sm">{funcionario}</p>
+                                    <p className="text-sm">{nome}</p>
                                   </div>
                                   <div className="col-span-6 sm:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700">
                                       Salário Base
                                     </label>
-                                    <p className="text-sm">R$ 10000</p>
+                                    <p className="text-sm">R$ {salario}</p>
                                   </div>
                                   <table>
                                     <thead className="text-sm font-semibold uppercase text-gray-400">
@@ -322,16 +385,26 @@ export default function Home() {
                                     <tbody className='text-xs'>
                                       <tr>
                                         <td className="p-2 whitespace-nowrap px-6 bg-gray-100">INSS</td>
-                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> 100</td>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> {(contas.inss(salario)).toFixed(2)}</td>
                                       </tr>
                                       <tr>
                                         <td className="p-2 whitespace-nowrap px-6 bg-gray-100">VALE TRANSPORTE</td>
-                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> 100</td>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> {(contas.valeTransporte(vt, salario)).toFixed(2)}</td>
                                       </tr>
                                       <tr>
                                         <td className="p-2 whitespace-nowrap px-6 bg-gray-100">IRRF</td>
-                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> 100</td>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> {(contas.irrf(salario, depir)).toFixed(2)}</td>
                                       </tr>
+                                      <tr>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-gray-100">SALÁRIO FAM.</td>
+                                        <td className="p-2 whitespace-nowrap px-6 bg-red-100"><a className='font-semibold text-gray-600'>R$</a> {(contas.salarioFamilia(salario, dep14)).toFixed(2)}</td>
+                                      </tr>
+                                      <div className="col-span-6 sm:col-span-2 mt-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                          Salário Líquido
+                                        </label>
+                                        <p className="text-sm">R$ {(contas.salarioLiquido(salario, vt, dep14, depir)).toFixed(2)}</p>
+                                      </div>
                                     </tbody>
                                   </table>
                                 </div>
@@ -346,7 +419,7 @@ export default function Home() {
               </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button  type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">Fechar</button>
+              <button onClick={() => setExtratoVisible('hidden')} type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">Fechar</button>
             </div>
           </div>
         </div>
